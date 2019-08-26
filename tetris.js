@@ -3,6 +3,8 @@ const context = canvas.getContext('2d');
 
 context.scale(20, 20);
 
+var newRecord = 0;
+
 function arenaSweep () {
 	let rowCount = 1;
 	outer: for (let y = arena.length - 1; y > 0; --y){
@@ -131,6 +133,7 @@ function playerDrop(){
 		playerReset();
 		arenaSweep();
 		updateScore();
+		updateNewRecord();
 	}
 	dropCounter = 0;
 }
@@ -148,11 +151,17 @@ function playerReset(){
 	player.pos.y = 0;
 	player.pos.x = (arena [0].length / 2 | 0) -
 					(player.matrix[0].length / 2 | 0);
+	if (player.score >= 0)
+		{
+			updateNewRecord();		
+		}
 	if (collide(arena, player)){
 		arena.forEach(row => row.fill(0));
 		player.score = 0;
 		updateScore();
-	}			
+		
+	}
+		
 }
 
 function playerRotate(dir){
@@ -199,10 +208,30 @@ let lastTime = 0;
 function update(time = 0){
 	const deltaTime = time - lastTime;
 	lastTime = time;
-	
+
 	dropCounter += deltaTime;
 	if (dropCounter > dropInterval){
 		playerDrop();
+		if (player.score >= 10)
+		{
+		lastTime = lastTime - 500;
+		}
+		if (player.score >= 150)
+		{
+		lastTime = lastTime - 100;
+		}
+		if (player.score >= 300)
+		{
+		lastTime = lastTime - 100;
+		}
+		if (player.score >= 600)
+		{
+		lastTime = lastTime - 100;
+		}
+		if (player.score >= 1000)
+		{
+		lastTime = lastTime - 100;
+		}
 	}
 
 	draw();
@@ -210,7 +239,16 @@ function update(time = 0){
 }
 
 function updateScore(){
-	document.getElementById('score').innerText = player.score;
+	document.getElementById('score').innerText ='Score: ' + player.score;
+}
+
+function updateNewRecord(){
+
+		if(player.score > 0) 
+		{
+			newRecord = player.score;
+		}
+		document.getElementById('newrecord').innerText ='New record: ' + newRecord;
 }
 
 const colors = [
@@ -229,7 +267,7 @@ const arena = createMatrix(12, 20);
 const player = {
 	pos: {x: 0, y: 0},
 	matrix: null,
-	score: 0,
+	score: 0
 }
 
 document.addEventListener ('keydown', event => {
